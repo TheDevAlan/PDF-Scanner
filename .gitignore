@@ -1,0 +1,17 @@
+# Build-Ordner
+build/
+dist/
+__pycache__/
+*.pyc
+
+# IDE-Dateien
+.vscode/
+.idea/
+
+# Temporäre Dateien
+*.log
+*.tmp
+
+# Aber resources-Ordner einschließen!
+!resources/
+!resources/** 
