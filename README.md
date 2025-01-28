@@ -20,7 +20,7 @@ Ein Programm zur automatischen Erkennung und Umbenennung von Prüfvermerken und 
 
 ### Verwendung der .exe
 
-1. Laden Sie die neueste Version aus dem [Releases](https://github.com/IHR_USERNAME/PDF-Scanner/releases) Bereich herunter
+1. Laden Sie die neueste Version aus dem [Releases]([https://github.com/IHR_USERNAME/PDF-Scanner/releases](https://github.com/TheDevAlan/PDF-Scanner/releases/tag/v1.0.0)) Bereich herunter
 2. Entpacken Sie die ZIP-Datei
 3. Starten Sie `PDF_Scanner.exe`
 4. Wählen Sie PDF-Dateien über den "Dateien hinzufügen" Button
