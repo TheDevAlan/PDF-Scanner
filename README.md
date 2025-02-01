@@ -13,7 +13,18 @@ Ein Programm zur automatischen Erkennung und Umbenennung von Prüfvermerken und 
 
 ## Installation
 
+<<<<<<< HEAD
 1. Laden Sie die neueste Version aus dem [Releases](https://github.com/IHR_USERNAME/PDF-Scanner/releases)-Bereich herunter
+=======
+### Voraussetzungen
+
+- Windows Betriebssystem
+- Die ausführbare Datei enthält bereits alle notwendigen Komponenten
+
+### Verwendung der .exe
+
+1. Laden Sie die neueste Version aus dem [Releases]((https://github.com/TheDevAlan/PDF-Scanner/releases/tag/v1.0.0)) Bereich herunter
+>>>>>>> 04d08bb12ec909d69906136e797fdd8f9805b720
 2. Entpacken Sie die ZIP-Datei
 3. Starten Sie `PDF_Scanner.exe`
 4. Wählen Sie PDF-Dateien über "Dateien hinzufügen"
@@ -23,6 +34,7 @@ Die umbenannten Dateien werden im Download-Ordner in einem neuen Ordner mit dem 
 
 ## Autor
 
+<<<<<<< HEAD
 Entwickelt von Alan Gawlik
 
 ---
@@ -85,3 +97,6 @@ Developed by Alan Gawlik
 - Tesseract OCR for text recognition
 - Poppler for PDF processing
 - Python community for various libraries 
+=======
+Ihr Name/Organisation 
+>>>>>>> 04d08bb12ec909d69906136e797fdd8f9805b720
