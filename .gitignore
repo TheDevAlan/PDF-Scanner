@@ -1,17 +1,30 @@
-# Build-Ordner
+# Build and distribution folders
 build/
 dist/
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
 
-# IDE-Dateien
+# IDE files
 .vscode/
 .idea/
+*.sublime-*
 
-# Temporäre Dateien
+# Temporary files
 *.log
 *.tmp
+*.bak
+*.swp
 
-# Aber resources-Ordner einschließen!
-!resources/
-!resources/** 
+# Resources folder (for development only)
+resources/
+
+# Environment
+venv/
+env/
+.env
+
+# System files
+.DS_Store
+Thumbs.db 

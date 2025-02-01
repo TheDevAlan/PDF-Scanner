@@ -1,68 +1,87 @@
 # PDF Dokumenten-Scanner
 
-Ein Programm zur automatischen Erkennung und Umbenennung von Prüfvermerken und Schlussbescheiden basierend auf OCR.
+Ein Programm zur automatischen Erkennung und Umbenennung von Prüfvermerken und Schlussbescheiden mittels OCR-Technologie.
 
 ## Funktionen
 
-- Erkennt Prüfvermerke und Schlussbescheide
-- Extrahiert automatisch die Projekt-Nummer
-- Benennt Dateien nach dem Schema: `[Projektnummer]_[Dokumenttyp].pdf`
+- Automatische Erkennung von Prüfvermerken und Schlussbescheiden
+- Extraktion der Projekt-Nummer
+- Automatische Umbenennung nach dem Schema: `[Projektnummer]_[Dokumenttyp].pdf`
 - Benutzerfreundliche grafische Oberfläche
-- Fortschrittsanzeige während der Verarbeitung
-- Speichert umbenannte Dateien in einem datierten Ordner
+- Fortschrittsanzeige
+- Speicherung in datumsbezogenen Ordnern
 
 ## Installation
 
-### Voraussetzungen
-
-- Windows Betriebssystem
-- Die ausführbare Datei enthält bereits alle notwendigen Komponenten
-
-### Verwendung der .exe
-
-1. Laden Sie die neueste Version aus dem [Releases](https://github.com/IHR_USERNAME/PDF-Scanner/releases) Bereich herunter
+1. Laden Sie die neueste Version aus dem [Releases](https://github.com/IHR_USERNAME/PDF-Scanner/releases)-Bereich herunter
 2. Entpacken Sie die ZIP-Datei
 3. Starten Sie `PDF_Scanner.exe`
-4. Wählen Sie PDF-Dateien über den "Dateien hinzufügen" Button
+4. Wählen Sie PDF-Dateien über "Dateien hinzufügen"
 5. Klicken Sie auf "Start"
 
-Die umbenannten Dateien werden im Download-Ordner in einem neuen Ordner mit dem aktuellen Datum gespeichert.
-
-## Entwicklung
-
-### Voraussetzungen
-
-- Python 3.7 oder höher
-- Tesseract OCR
-- Poppler für Windows
-
-### Installation für Entwickler
-
-1. Repository klonen:
-   ```
-   git clone https://github.com/IHR_USERNAME/PDF-Scanner.git
-   ```
-
-2. Abhängigkeiten installieren:
-   ```
-   pip install -r requirements.txt
-   ```
-
-3. Programm starten:
-   ```
-   python pdf_ocr_gui.py
-   ```
-
-### .exe erstellen
-
-```
-pyinstaller PDF_Scanner.spec
-```
-
-## Lizenz
-
-[MIT](LICENSE)
+Die umbenannten Dateien werden im Download-Ordner in einem neuen Ordner mit dem aktuellen Datum gespeichert (Format: `Prüfvermerke_YYYY-MM-DD`).
 
 ## Autor
 
-Ihr Name/Organisation 
+Entwickelt von Alan Gawlik
+
+---
+
+# [EN] PDF Document Scanner
+
+A Windows application that automatically processes, recognizes, and renames specific German document types (Audit Notes and Final Notices) using OCR technology.
+
+## Key Features
+
+- Automatic recognition of "Prüfvermerk" (Audit Notes) and "Schlussbescheid" (Final Notices)
+- Project number extraction
+- Automatic file renaming following the pattern: `[ProjectNumber]_[DocumentType].pdf`
+- User-friendly GUI (in German)
+- Progress tracking
+- Date-based folder organization
+
+## Installation
+
+1. Download the latest release from the [Releases](https://github.com/IHR_USERNAME/PDF-Scanner/releases) page
+2. Extract the ZIP file
+3. Run `PDF_Scanner.exe`
+
+Note: The application interface is in German as it is specifically designed for processing German documents.
+
+## For Developers
+
+### Prerequisites
+
+- Python 3.7 or higher
+- Required packages: see `requirements.txt`
+
+### Development Setup
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/IHR_USERNAME/PDF-Scanner.git
+   ```
+
+2. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. Run the application:
+   ```bash
+   python pdf_ocr_gui.py
+   ```
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Author
+
+Developed by Alan Gawlik
+
+## Acknowledgments
+
+- Tesseract OCR for text recognition
+- Poppler for PDF processing
+- Python community for various libraries 

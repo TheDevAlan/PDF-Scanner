@@ -10,23 +10,23 @@ import re
 from pdf2image import convert_from_path
 
 def get_base_path():
-    """Ermittelt den Basis-Pfad für die Ressourcen, unterscheidet zwischen .exe und Python-Skript"""
+    """Determines the base path for resources, distinguishes between .exe and Python script"""
     if getattr(sys, 'frozen', False):
-        # Wenn als .exe ausgeführt
+        # When running as .exe
         return os.path.dirname(sys.executable)
     else:
-        # Wenn als Python-Skript ausgeführt
+        # When running as Python script
         return os.path.dirname(os.path.abspath(__file__))
 
-# Ressourcen-Pfade setzen
+# Set resource paths
 BASE_PATH = get_base_path()
 POPPLER_PATH = os.path.join(BASE_PATH, "resources", "poppler")
 TESSERACT_PATH = os.path.join(BASE_PATH, "resources", "Tesseract-OCR", "tesseract.exe")
 
-# Tesseract-Umgebungsvariable setzen
+# Set Tesseract environment variable
 os.environ['TESSDATA_PREFIX'] = os.path.join(BASE_PATH, "resources", "Tesseract-OCR", "tessdata")
 
-# Prüfe Pfade
+# Check paths
 if not os.path.exists(POPPLER_PATH):
     messagebox.showerror("Fehler", f"Poppler-Pfad nicht gefunden: {POPPLER_PATH}")
     sys.exit(1)
@@ -43,19 +43,19 @@ class PDFOCRGUI:
         self.root.title("PDF Dokumenten-Scanner")
         self.root.geometry("600x400")
         
-        # Stil konfigurieren
+        # Configure style
         style = ttk.Style()
         style.configure("Custom.TFrame", background="#f0f0f0")
         
-        # Hauptframe
+        # Main frame
         self.main_frame = ttk.Frame(root, style="Custom.TFrame", padding="20")
         self.main_frame.pack(fill=BOTH, expand=True)
         
-        # Datei-Frame
+        # File frame
         self.file_frame = ttk.Frame(self.main_frame, style="Custom.TFrame", padding="10")
         self.file_frame.pack(fill=BOTH, expand=True, pady=10)
         
-        # Hinweis-Label
+        # Info label
         self.info_label = ttk.Label(
             self.file_frame,
             text="PDF-Dokumente auswählen\n(Prüfvermerke und Schlussbescheide)",
@@ -63,7 +63,7 @@ class PDFOCRGUI:
         )
         self.info_label.pack(pady=10)
         
-        # Datei-Button
+        # File button
         self.file_button = ttk.Button(
             self.file_frame,
             text="Dateien hinzufügen",
@@ -71,7 +71,7 @@ class PDFOCRGUI:
         )
         self.file_button.pack(pady=5)
         
-        # Listbox für Dateien
+        # Listbox for files
         self.files_listbox = Listbox(
             self.file_frame,
             width=50,
@@ -98,11 +98,11 @@ class PDFOCRGUI:
         )
         self.start_button.pack(side=RIGHT, padx=5)
         
-        # Progress Frame
+        # Progress frame
         self.progress_frame = ttk.Frame(self.main_frame)
         self.progress_frame.pack(fill=X, pady=10)
         
-        # Progress Bar
+        # Progress bar
         self.progress_var = DoubleVar()
         self.progress_bar = ttk.Progressbar(
             self.progress_frame,
@@ -113,7 +113,7 @@ class PDFOCRGUI:
         )
         self.progress_bar.pack(side=LEFT, fill=X, expand=True, padx=(0, 10))
         
-        # Prozent-Label
+        # Percentage label
         self.percent_label = ttk.Label(
             self.progress_frame,
             text="0%",
@@ -121,7 +121,7 @@ class PDFOCRGUI:
         )
         self.percent_label.pack(side=RIGHT)
         
-        # Status Label
+        # Status label
         self.status_label = ttk.Label(
             self.main_frame,
             text="Bereit",
@@ -132,7 +132,7 @@ class PDFOCRGUI:
         self.pdf_files = []
 
     def update_progress(self, value, status_text=None):
-        """Aktualisiert den Fortschrittsbalken und die Prozentanzeige"""
+        """Updates the progress bar and percentage display"""
         self.progress_var.set(value)
         self.percent_label.config(text=f"{int(value)}%")
         if status_text:
@@ -156,24 +156,24 @@ class PDFOCRGUI:
         self.update_progress(0, "Bereit")
 
     def extract_info_from_pdf(self, pdf_path):
-        """Extrahiert die Projekt-Nr. und verifiziert den Dokumenttyp (Prüfvermerk oder Schlussbescheid)."""
+        """Extracts the project number and verifies the document type (Audit Note or Final Notice)."""
         try:
             pages = convert_from_path(pdf_path, first_page=1, last_page=1, poppler_path=POPPLER_PATH)
             if not pages:
                 return None
             
-            # Versuche zuerst deutsche OCR, falls nicht verfügbar, nutze Englisch
+            # Try German OCR first, fall back to English if not available
             try:
                 text = pytesseract.image_to_string(pages[0], lang='deu')
             except:
                 text = pytesseract.image_to_string(pages[0], lang='eng')
             
-            # Debug-Ausgabe des erkannten Textes
-            print("Erkannter Text:")
+            # Debug output of recognized text
+            print("Recognized Text:")
             print(text)
             print("-" * 50)
             
-            # Suche nach der Projekt-Nr. mit verschiedenen Mustern
+            # Search for project number using various patterns
             patterns = [
                 r'Projekt-Nr\.:\s*(\d+)',
                 r'Projekt-Nr\s*:\s*(\d+)',
@@ -191,7 +191,7 @@ class PDFOCRGUI:
                     break
             
             if not projekt_nr:
-                # Suche nach einer Zahl mit genau 10 Stellen
+                # Look for a number with exactly 10 digits
                 numbers = re.findall(r'\b\d{10}\b', text)
                 if numbers:
                     projekt_nr = numbers[0]
@@ -203,7 +203,7 @@ class PDFOCRGUI:
                 )
                 return None
             
-            # Erkenne Dokumenttyp
+            # Identify document type
             if any(term in text for term in ["Prüfvermerk", "Prufvermerk", "Prüf vermerk", "Pruf vermerk"]):
                 return f"{projekt_nr}_Prüfvermerk"
             elif any(term in text for term in ["Schlussbescheid", "Schluss bescheid", "Schlußbescheid", "Schluß bescheid"]):
@@ -224,13 +224,13 @@ class PDFOCRGUI:
             messagebox.showinfo("Information", "Bitte fügen Sie zuerst PDF-Dateien hinzu.")
             return
         
-        # Deaktiviere Buttons während der Verarbeitung
+        # Disable buttons during processing
         self.start_button.config(state='disabled')
         self.clear_button.config(state='disabled')
         self.file_button.config(state='disabled')
         
         try:
-            # Erstelle Zielordner im Download-Verzeichnis
+            # Create target directory in Downloads folder
             downloads_path = os.path.expanduser("~/Downloads")
             date_str = datetime.now().strftime("%Y-%m-%d")
             target_dir = os.path.join(downloads_path, f"Prüfvermerke_{date_str}")
@@ -242,7 +242,7 @@ class PDFOCRGUI:
             processed_files = 0
             
             for pdf_path in self.pdf_files:
-                # Aktualisiere Status und Fortschrittsbalken
+                # Update status and progress bar
                 status_text = f"Verarbeite: {os.path.basename(pdf_path)}"
                 progress = (processed_files / total_files) * 100
                 self.update_progress(progress, status_text)
@@ -252,7 +252,7 @@ class PDFOCRGUI:
                     new_filename = f"{new_name}.pdf"
                     target_path = os.path.join(target_dir, new_filename)
                     
-                    # Verhindere Duplikate
+                    # Prevent duplicates
                     counter = 1
                     while os.path.exists(target_path):
                         new_filename = f"{new_name}_{counter}.pdf"
@@ -268,7 +268,7 @@ class PDFOCRGUI:
                 progress = (processed_files / total_files) * 100
                 self.update_progress(progress)
             
-            # Setze Fortschrittsbalken auf 100% und zeige "Fertig"
+            # Set progress bar to 100% and show "Finished"
             self.update_progress(100, "Fertig!")
             
             messagebox.showinfo(
@@ -277,7 +277,7 @@ class PDFOCRGUI:
             )
         
         finally:
-            # Aktiviere Buttons wieder
+            # Re-enable buttons
             self.start_button.config(state='normal')
             self.clear_button.config(state='normal')
             self.file_button.config(state='normal')
