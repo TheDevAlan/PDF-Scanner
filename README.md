@@ -13,8 +13,8 @@ Ein Programm zur automatischen Erkennung und Umbenennung von Prüfvermerken und 
 
 ## Installation
 
-1. Laden Sie die neueste Version aus dem [Releases](https://github.com/IHR_USERNAME/PDF-Scanner/releases)-Bereich herunter
-=======
+1. Laden Sie die neueste Version aus dem [Releases](https://github.com/TheDevAlan/PDF-Scanner/releases)-Bereich herunter
+
 ### Voraussetzungen
 
 - Windows Betriebssystem
