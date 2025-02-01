@@ -13,9 +13,6 @@ Ein Programm zur automatischen Erkennung und Umbenennung von Prüfvermerken und 
 
 ## Installation
 
-<<<<<<< HEAD
-1. Laden Sie die neueste Version aus dem [Releases](https://github.com/IHR_USERNAME/PDF-Scanner/releases)-Bereich herunter
-=======
 ### Voraussetzungen
 
 - Windows Betriebssystem
@@ -23,8 +20,7 @@ Ein Programm zur automatischen Erkennung und Umbenennung von Prüfvermerken und 
 
 ### Verwendung der .exe
 
-1. Laden Sie die neueste Version aus dem [Releases]((https://github.com/TheDevAlan/PDF-Scanner/releases/tag/v1.0.0)) Bereich herunter
->>>>>>> 04d08bb12ec909d69906136e797fdd8f9805b720
+1. Laden Sie die neueste Version aus dem [Releases](https://github.com/TheDevAlan/PDF-Scanner/releases) Bereich herunter
 2. Entpacken Sie die ZIP-Datei
 3. Starten Sie `PDF_Scanner.exe`
 4. Wählen Sie PDF-Dateien über "Dateien hinzufügen"
@@ -34,7 +30,6 @@ Die umbenannten Dateien werden im Download-Ordner in einem neuen Ordner mit dem 
 
 ## Autor
 
-<<<<<<< HEAD
 Entwickelt von Alan Gawlik
 
 ---
@@ -54,7 +49,7 @@ A Windows application that automatically processes, recognizes, and renames spec
 
 ## Installation
 
-1. Download the latest release from the [Releases](https://github.com/IHR_USERNAME/PDF-Scanner/releases) page
+1. Download the latest release from the [Releases](https://github.com/TheDevAlan/PDF-Scanner/releases) page
 2. Extract the ZIP file
 3. Run `PDF_Scanner.exe`
 
@@ -71,7 +66,7 @@ Note: The application interface is in German as it is specifically designed for 
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/IHR_USERNAME/PDF-Scanner.git
+   git clone https://github.com/TheDevAlan/PDF-Scanner.git
    ```
 
 2. Install dependencies:
@@ -96,7 +91,4 @@ Developed by Alan Gawlik
 
 - Tesseract OCR for text recognition
 - Poppler for PDF processing
-- Python community for various libraries 
-=======
-Ihr Name/Organisation 
->>>>>>> 04d08bb12ec909d69906136e797fdd8f9805b720
+- Python community for various libraries
