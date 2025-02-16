@@ -58,7 +58,7 @@ class PDFOCRGUI:
         # Info label
         self.info_label = ttk.Label(
             self.file_frame,
-            text="PDF-Dokumente auswählen\n(Prüfvermerke und Schlussbescheide)",
+            text="PDF-Dokumente auswählen\n(Prüfvermerke, Schlussbescheide und Beleganforderungen)",
             font=("Helvetica", 12)
         )
         self.info_label.pack(pady=10)
@@ -208,10 +208,12 @@ class PDFOCRGUI:
                 return f"{projekt_nr}_Prüfvermerk"
             elif any(term in text for term in ["Schlussbescheid", "Schluss bescheid", "Schlußbescheid", "Schluß bescheid"]):
                 return f"{projekt_nr}_Schlussbescheid"
+            elif any(term in text for term in ["Beleganforderung", "Beleg-Anforderung", "Beleg Anforderung"]):
+                return f"{projekt_nr}_Beleganforderung"
             else:
                 messagebox.showwarning(
                     "Unbekannter Dokumenttyp",
-                    f"Die Datei {os.path.basename(pdf_path)} scheint weder ein Prüfvermerk noch ein Schlussbescheid zu sein."
+                    f"Die Datei {os.path.basename(pdf_path)} scheint weder ein Prüfvermerk, ein Schlussbescheid noch eine Beleganforderung zu sein."
                 )
                 return None
             
