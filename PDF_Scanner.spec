@@ -1,5 +1,17 @@
 # -*- mode: python ; coding: utf-8 -*-
 import os
+import sys
+import shutil
+from pathlib import Path
+
+# Überprüfe, ob der resources/pdfium Ordner existiert
+current_dir = os.getcwd()
+pdfium_resource_dir = os.path.join(current_dir, "resources", "pdfium")
+
+if not os.path.exists(pdfium_resource_dir):
+    print("WARNUNG: resources/pdfium Verzeichnis nicht gefunden!")
+    print("Bitte führen Sie erst extract_pdfium.py aus, um die Binärdateien zu extrahieren.")
+    print("Die EXE-Datei wird trotzdem erstellt, aber die PDFium-Binärdateien werden nicht enthalten sein.")
 
 block_cipher = None
 
@@ -8,11 +20,10 @@ a = Analysis(
     pathex=[],
     binaries=[],
     datas=[
-        ('resources/poppler/*', 'resources/poppler'),
         ('resources/Tesseract-OCR/*', 'resources/Tesseract-OCR'),
         ('resources/Tesseract-OCR/tessdata/*', 'resources/Tesseract-OCR/tessdata'),
     ],
-    hiddenimports=[],
+    hiddenimports=['pypdfium2'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
@@ -22,6 +33,17 @@ a = Analysis(
     cipher=block_cipher,
     noarchive=False,
 )
+
+# Füge PDFium-Binärdateien hinzu, wenn sie im resources-Ordner vorhanden sind
+if os.path.exists(pdfium_resource_dir):
+    for root, dirs, files in os.walk(pdfium_resource_dir):
+        for file in files:
+            if file.endswith(('.dll', '.so', '.dylib', '.pyd')):
+                file_path = os.path.join(root, file)
+                rel_path = os.path.relpath(file_path, current_dir)
+                target_path = os.path.relpath(file_path, pdfium_resource_dir)
+                a.datas += [(f'resources/pdfium/{target_path}', file_path, 'DATA')]
+    print(f"PDFium-Binärdateien aus {pdfium_resource_dir} wurden zur Spec-Datei hinzugefügt.")
 
 pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 

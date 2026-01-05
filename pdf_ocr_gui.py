@@ -1,13 +1,26 @@
 import os
 import sys
 import shutil
+import ctypes
 from datetime import datetime
 from tkinter import *
 from tkinter import ttk, messagebox, filedialog
 import pytesseract
-from PIL import Image
+from PIL import Image, ImageDraw
 import re
-from pdf2image import convert_from_path
+
+# Aktiviere High-DPI-Unterstützung für Windows
+if sys.platform.startswith('win'):
+    # Füge DPI-Awareness hinzu, um Skalierungsprobleme zu vermeiden
+    try:
+        # Windows 8.1 und höher
+        ctypes.windll.shcore.SetProcessDpiAwareness(1)  # PROCESS_SYSTEM_DPI_AWARE
+    except Exception:
+        try:
+            # Windows 8.0 und niedriger
+            ctypes.windll.user32.SetProcessDPIAware()
+        except Exception:
+            pass
 
 def get_base_path():
     """Determines the base path for resources, distinguishes between .exe and Python script"""
@@ -15,41 +28,165 @@ def get_base_path():
         # When running as .exe
         return os.path.dirname(sys.executable)
     else:
-        # When running as Python script
+        # When running as script
         return os.path.dirname(os.path.abspath(__file__))
 
-# Set resource paths
+# Setze den Pfad für PDFium-Bibliotheken VOR dem Import von pypdfium2
 BASE_PATH = get_base_path()
-POPPLER_PATH = os.path.join(BASE_PATH, "resources", "poppler")
+PDFIUM_PATH = os.path.join(BASE_PATH, "resources", "pdfium")
+
+# Wenn wir als .exe ausgeführt werden und der PDFium-Ordner existiert, füge ihn zum Systempfad hinzu
+if getattr(sys, 'frozen', False) and os.path.exists(PDFIUM_PATH):
+    # Füge den Pfad zur PATH-Umgebungsvariable hinzu
+    os.environ["PATH"] = PDFIUM_PATH + os.pathsep + os.environ.get("PATH", "")
+    
+    # Setze auch die spezifische Umgebungsvariable für pypdfium2
+    os.environ["PYPDFIUM2_PDFIUM_LIBRARY"] = os.path.join(PDFIUM_PATH, "pdfium.dll")
+    
+    print(f"PDFium-Pfad gesetzt auf: {PDFIUM_PATH}")
+    print(f"PYPDFIUM2_PDFIUM_LIBRARY: {os.environ.get('PYPDFIUM2_PDFIUM_LIBRARY')}")
+
+# Erst NACH dem Setzen des Pfads importieren wir pypdfium2
+import pypdfium2 as pdfium
+import io
+
+# Set resource paths
 TESSERACT_PATH = os.path.join(BASE_PATH, "resources", "Tesseract-OCR", "tesseract.exe")
 
-# Set Tesseract environment variable
+# Set environment variables
 os.environ['TESSDATA_PREFIX'] = os.path.join(BASE_PATH, "resources", "Tesseract-OCR", "tessdata")
 
-# Check paths
-if not os.path.exists(POPPLER_PATH):
-    messagebox.showerror("Fehler", f"Poppler-Pfad nicht gefunden: {POPPLER_PATH}")
-    sys.exit(1)
+# Check if PDFium resources exist and set environment variables if needed
+if os.path.exists(PDFIUM_PATH):
+    # Add PDFium path to PATH environment variable
+    os.environ["PATH"] = PDFIUM_PATH + os.pathsep + os.environ.get("PATH", "")
+    print(f"PDFium-Binärdateien gefunden in: {PDFIUM_PATH}")
+else:
+    print("PDFium-Binärdateien nicht im resources-Ordner gefunden. Verwende installiertes Paket.")
 
+# Check Tesseract path
 if not os.path.exists(TESSERACT_PATH):
     messagebox.showerror("Fehler", f"Tesseract-Pfad nicht gefunden: {TESSERACT_PATH}")
     sys.exit(1)
 
 pytesseract.pytesseract.tesseract_cmd = TESSERACT_PATH
 
+class AboutDialog:
+    def __init__(self, parent):
+        self.dialog = Toplevel(parent)
+        self.dialog.title("Über PDF Dokumenten-Scanner")
+        self.dialog.geometry("600x400")
+        self.dialog.resizable(False, False)
+        self.dialog.transient(parent)
+        self.dialog.grab_set()
+        
+        # Titel
+        title_frame = Frame(self.dialog)
+        title_frame.pack(fill=X, pady=10)
+        
+        title_label = Label(
+            title_frame, 
+            text="PDF Dokumenten-Scanner", 
+            font=("Segoe UI", 14, "bold")
+        )
+        title_label.pack()
+        
+        version_label = Label(
+            title_frame, 
+            text="Version 1.1.0", 
+            font=("Segoe UI", 10)
+        )
+        version_label.pack()
+        
+        # Beschreibung
+        desc_frame = Frame(self.dialog)
+        desc_frame.pack(fill=X, pady=10, padx=20)
+        
+        desc_label = Label(
+            desc_frame,
+            text="Ein Programm zur automatischen Erkennung und Umbenennung von PDF-Dokumenten mittels OCR.",
+            font=("Segoe UI", 9),
+            wraplength=550,
+            justify=LEFT
+        )
+        desc_label.pack(anchor=W)
+        
+        # Lizenzinformationen
+        license_frame = Frame(self.dialog)
+        license_frame.pack(fill=BOTH, expand=True, padx=20, pady=10)
+        
+        license_label = Label(
+            license_frame,
+            text="Lizenzinformationen:",
+            font=("Segoe UI", 9, "bold"),
+            justify=LEFT
+        )
+        license_label.pack(anchor=W)
+        
+        license_text = Text(
+            license_frame,
+            wrap=WORD,
+            font=("Segoe UI", 9),
+            height=15,
+            width=80
+        )
+        license_text.insert("1.0", LICENSE_INFO)
+        license_text.config(state=DISABLED)
+        
+        license_scroll = Scrollbar(license_frame, command=license_text.yview)
+        license_text.config(yscrollcommand=license_scroll.set)
+        
+        license_scroll.pack(side=RIGHT, fill=Y)
+        license_text.pack(side=LEFT, fill=BOTH, expand=True)
+        
+        # Schließen-Button
+        button_frame = Frame(self.dialog)
+        button_frame.pack(fill=X, pady=10)
+        
+        close_button = Button(
+            button_frame,
+            text="Schließen",
+            command=self.dialog.destroy,
+            width=10
+        )
+        close_button.pack(pady=5)
+        
+        # Zentriere den Dialog auf dem Hauptfenster
+        self.dialog.update_idletasks()
+        width = self.dialog.winfo_width()
+        height = self.dialog.winfo_height()
+        x = parent.winfo_rootx() + (parent.winfo_width() - width) // 2
+        y = parent.winfo_rooty() + (parent.winfo_height() - height) // 2
+        self.dialog.geometry(f"{width}x{height}+{x}+{y}")
+
 class PDFOCRGUI:
     def __init__(self, root):
         self.root = root
         self.root.title("PDF Dokumenten-Scanner")
-        self.root.geometry("600x400")
+        
+        # Verwende die native Windows-Skalierung für die Fenstergröße
+        screen_width = root.winfo_screenwidth()
+        screen_height = root.winfo_screenheight()
+        width = int(screen_width * 0.5)  # 50% der Bildschirmbreite
+        height = int(screen_height * 0.4)  # 40% der Bildschirmhöhe
+        self.root.geometry(f"{width}x{height}")
+        
+        # Moderne Schriftart für bessere DPI-Skalierung
+        default_font = ("Segoe UI", 9)
+        heading_font = ("Segoe UI", 12)
         
         # Configure style
         style = ttk.Style()
         style.configure("Custom.TFrame", background="#f0f0f0")
+        style.configure("TButton", font=default_font)
+        style.configure("TLabel", font=default_font)
         
         # Main frame
         self.main_frame = ttk.Frame(root, style="Custom.TFrame", padding="20")
         self.main_frame.pack(fill=BOTH, expand=True)
+        
+        # Menüleiste
+        self.create_menu()
         
         # File frame
         self.file_frame = ttk.Frame(self.main_frame, style="Custom.TFrame", padding="10")
@@ -58,8 +195,8 @@ class PDFOCRGUI:
         # Info label
         self.info_label = ttk.Label(
             self.file_frame,
-            text="PDF-Dokumente auswählen\n(Prüfvermerke, Schlussbescheide und Beleganforderungen)",
-            font=("Helvetica", 12)
+            text="PDF-Dokumente auswählen\n(Verschiedene Dokumenttypen werden automatisch erkannt)",
+            font=heading_font
         )
         self.info_label.pack(pady=10)
         
@@ -76,7 +213,8 @@ class PDFOCRGUI:
             self.file_frame,
             width=50,
             height=10,
-            selectmode=EXTENDED
+            selectmode=EXTENDED,
+            font=default_font
         )
         self.files_listbox.pack(fill=BOTH, expand=True)
         
@@ -117,7 +255,8 @@ class PDFOCRGUI:
         self.percent_label = ttk.Label(
             self.progress_frame,
             text="0%",
-            width=5
+            width=5,
+            font=default_font
         )
         self.percent_label.pack(side=RIGHT)
         
@@ -125,11 +264,33 @@ class PDFOCRGUI:
         self.status_label = ttk.Label(
             self.main_frame,
             text="Bereit",
-            font=("Helvetica", 10)
+            font=default_font
         )
         self.status_label.pack(pady=5)
         
         self.pdf_files = []
+    
+    def create_menu(self):
+        """Erstellt die Menüleiste"""
+        menubar = Menu(self.root)
+        self.root.config(menu=menubar)
+        
+        # Datei-Menü
+        file_menu = Menu(menubar, tearoff=0)
+        menubar.add_cascade(label="Datei", menu=file_menu)
+        file_menu.add_command(label="Dateien hinzufügen", command=self.add_files)
+        file_menu.add_command(label="Liste leeren", command=self.clear_list)
+        file_menu.add_separator()
+        file_menu.add_command(label="Beenden", command=self.root.destroy)
+        
+        # Hilfe-Menü
+        help_menu = Menu(menubar, tearoff=0)
+        menubar.add_cascade(label="Hilfe", menu=help_menu)
+        help_menu.add_command(label="Über", command=self.show_about)
+    
+    def show_about(self):
+        """Zeigt den Über-Dialog an"""
+        AboutDialog(self.root)
 
     def update_progress(self, value, status_text=None):
         """Updates the progress bar and percentage display"""
@@ -155,18 +316,40 @@ class PDFOCRGUI:
         self.pdf_files.clear()
         self.update_progress(0, "Bereit")
 
+    def pdf_to_image(self, pdf_path, page_num=0):
+        """Convert a PDF page to a PIL Image using PDFium"""
+        try:
+            # Open the PDF
+            pdf_document = pdfium.PdfDocument(pdf_path)
+            
+            # Get the first page
+            page = pdf_document[page_num]
+            
+            # Render page to an image with higher resolution (300 DPI)
+            bitmap = page.render(scale=3.0)
+            
+            # Convert to PIL Image
+            pil_image = bitmap.to_pil()
+            
+            return pil_image
+            
+        except Exception as e:
+            print(f"Error converting PDF to image: {e}")
+            return None
+
     def extract_info_from_pdf(self, pdf_path):
         """Extracts the project number and verifies the document type (Audit Note or Final Notice)."""
         try:
-            pages = convert_from_path(pdf_path, first_page=1, last_page=1, poppler_path=POPPLER_PATH)
-            if not pages:
+            # Convert first page of PDF to image
+            img = self.pdf_to_image(pdf_path)
+            if img is None:
                 return None
             
             # Try German OCR first, fall back to English if not available
             try:
-                text = pytesseract.image_to_string(pages[0], lang='deu')
+                text = pytesseract.image_to_string(img, lang='deu')
             except:
-                text = pytesseract.image_to_string(pages[0], lang='eng')
+                text = pytesseract.image_to_string(img, lang='eng')
             
             # Debug output of recognized text
             print("Recognized Text:")
@@ -208,12 +391,26 @@ class PDFOCRGUI:
                 return f"{projekt_nr}_Prüfvermerk"
             elif any(term in text for term in ["Schlussbescheid", "Schluss bescheid", "Schlußbescheid", "Schluß bescheid"]):
                 return f"{projekt_nr}_Schlussbescheid"
-            elif any(term in text for term in ["Beleganforderung", "Beleg-Anforderung", "Beleg Anforderung"]):
+            elif any(term in text for term in ["Kursorische Prüfung", "Kursorische Prufung", "KursorischePrüfung", "KursorischePrufung", "kursorische prüfung", "kursorische prufung"]):
+                return f"{projekt_nr}_Kursorische Prüfung"
+            elif any(term in text for term in ["Anhörung", "Anhoerung", "anhörung", "anhoerung"]):
+                return f"{projekt_nr}_Anhörung"
+            elif any(term in text for term in ["Widerrufsbescheid", "Widerruf bescheid", "Widerrufbescheid", "widerrufsbescheid"]):
+                return f"{projekt_nr}_Widerrufsbescheid"
+            elif any(term in text for term in ["Auswertung Sachbericht", "AuswertungSachbericht", "Auswertung Sach-Bericht", "auswertung sachbericht"]):
+                return f"{projekt_nr}_Auswertung Sachbericht"
+            elif any(term in text for term in ["Zwischennachweis", "Zwischen nachweis", "Zwischen-Nachweis", "zwischennachweis"]):
+                return f"{projekt_nr}_Zwischennachweis"
+            elif any(term in text for term in ["Beleganforderung", "Beleg-Anforderung", "Beleg Anforderung", "beleganforderung"]):
                 return f"{projekt_nr}_Beleganforderung"
+            elif any(term in text for term in ["Archivierungsverfügung", "Archivierungsverfuegung", "Archivierung verfügung", "Archivierung-Verfügung", "archivierungsverfügung"]):
+                return f"{projekt_nr}_Archivierungsverfügung"
+            elif any(term in text for term in ["Änderungsbescheid", "Aenderungsbescheid", "Änderung bescheid", "Änderung-Bescheid", "aenderungsbescheid"]):
+                return f"{projekt_nr}_Änderungsbescheid"
             else:
                 messagebox.showwarning(
                     "Unbekannter Dokumenttyp",
-                    f"Die Datei {os.path.basename(pdf_path)} scheint weder ein Prüfvermerk, ein Schlussbescheid noch eine Beleganforderung zu sein."
+                    f"Die Datei {os.path.basename(pdf_path)} scheint kein bekannter Dokumenttyp zu sein."
                 )
                 return None
             
@@ -235,7 +432,7 @@ class PDFOCRGUI:
             # Create target directory in Downloads folder
             downloads_path = os.path.expanduser("~/Downloads")
             date_str = datetime.now().strftime("%Y-%m-%d")
-            target_dir = os.path.join(downloads_path, f"Prüfvermerke_{date_str}")
+            target_dir = os.path.join(downloads_path, f"Dokumentenscans_{date_str}")
             
             if not os.path.exists(target_dir):
                 os.makedirs(target_dir)

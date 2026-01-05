@@ -79,16 +79,32 @@ Note: The application interface is in German as it is specifically designed for 
    python pdf_ocr_gui.py
    ```
 
-## License
+4. Extract PDFium binaries (only required for development):
+   ```bash
+   python extract_pdfium.py
+   ```
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+## Lizenz
 
-## Author
+Dieses Projekt ist unter der MIT-Lizenz lizenziert – siehe [LICENSE](LICENSE) Datei für Details.
 
-Developed by Alan Gawlik
+### Verwendete Bibliotheken und Lizenzen
+
+Dieses Programm verwendet Open-Source-Software mit den folgenden Lizenzen:
+
+- **pypdfium2** - BSD-3-Clause, Apache-2.0, CC-BY-4.0, Fair Use & Drittanbieter-Lizenzen  
+  - Copyright © 2014-2024 PDFium Authors  
+  - Die vollständige Lizenz finden Sie unter: [PDFium Lizenz](https://github.com/pypdfium2-team/pypdfium2/tree/main/LICENSES)  
+  - PDFium enthält zusätzlich Drittanbieter-Code unter verschiedenen Lizenzen, die unter `LicenseRef-PdfiumThirdParty.txt` dokumentiert sind.  
+
+- **Tesseract OCR** - Apache 2.0  
+  - Copyright © 2006-2024 Google Inc.  
+  - Die vollständige Lizenz: [Tesseract OCR Lizenz](https://github.com/tesseract-ocr/tesseract/blob/main/LICENSE)  
+
+Gemäß den Anforderungen der jeweiligen Lizenzen wird hiermit bestätigt, dass dieses Produkt Software enthält, die von den oben genannten Projekten entwickelt wurde.
 
 ## Acknowledgments
 
 - Tesseract OCR for text recognition
-- Poppler for PDF processing
+- PDFium for PDF processing
 - Python community for various libraries
