@@ -1,5 +1,20 @@
 # Changelog
 
+## Version 1.5.0 (January 05, 2026)
+
+### New Features
+- **Additional Document Types**: Added automatic detection and renaming for the following document types:
+  - Kurzantrag
+  - Antrag
+  - Förderzusage
+  - Antragsprüfvermerk
+  - Zuwendungsbescheid
+  - Verwendungsnachweis
+  - Mittelanforderung
+  - Auszahlungsblatt
+  - Erinnerungsschreiben
+  - Mahnschreiben
+
 ## Version 1.4.0 (January 05, 2026)
 
 ### New Features

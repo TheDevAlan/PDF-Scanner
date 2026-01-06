@@ -1,10 +1,30 @@
 # PDF Dokumenten-Scanner
 
-Ein Programm zur automatischen Erkennung und Umbenennung von Prüfvermerken und Schlussbescheiden mittels OCR-Technologie.
+Ein Programm zur automatischen Erkennung und Umbenennung von PDF-Dokumenten mittels OCR-Technologie.
 
 ## Funktionen
 
-- Automatische Erkennung von Prüfvermerken und Schlussbescheiden
+- Automatische Erkennung verschiedener Dokumenttypen:
+  - Prüfvermerk
+  - Schlussbescheid
+  - Kursorische Prüfung
+  - Anhörung
+  - Widerrufsbescheid
+  - Auswertung Sachbericht
+  - Zwischennachweis
+  - Beleganforderung
+  - Archivierungsverfügung
+  - Änderungsbescheid
+  - Kurzantrag
+  - Antrag
+  - Förderzusage
+  - Antragsprüfvermerk
+  - Zuwendungsbescheid
+  - Verwendungsnachweis
+  - Mittelanforderung
+  - Auszahlungsblatt
+  - Erinnerungsschreiben
+  - Mahnschreiben
 - Extraktion der Projekt-Nummer
 - Automatische Umbenennung nach dem Schema: `[Projektnummer]_[Dokumenttyp].pdf`
 - Benutzerfreundliche grafische Oberfläche
@@ -26,7 +46,7 @@ Ein Programm zur automatischen Erkennung und Umbenennung von Prüfvermerken und 
 4. Wählen Sie PDF-Dateien über "Dateien hinzufügen"
 5. Klicken Sie auf "Start"
 
-Die umbenannten Dateien werden im Download-Ordner in einem neuen Ordner mit dem aktuellen Datum gespeichert (Format: `Prüfvermerke_YYYY-MM-DD`).
+Die umbenannten Dateien werden im Download-Ordner in einem neuen Ordner mit dem aktuellen Datum gespeichert (Format: `Dokumentenscans_YYYY-MM-DD`).
 
 ## Autor
 
@@ -36,11 +56,31 @@ Entwickelt von Alan Gawlik
 
 # [EN] PDF Document Scanner
 
-A Windows application that automatically processes, recognizes, and renames specific German document types (Audit Notes and Final Notices) using OCR technology.
+A Windows application that automatically processes, recognizes, and renames various German document types using OCR technology.
 
 ## Key Features
 
-- Automatic recognition of "Prüfvermerk" (Audit Notes) and "Schlussbescheid" (Final Notices)
+- Automatic recognition of multiple document types including:
+  - Prüfvermerk (Audit Notes)
+  - Schlussbescheid (Final Notices)
+  - Kursorische Prüfung (Cursory Review)
+  - Anhörung (Hearing)
+  - Widerrufsbescheid (Revocation Notice)
+  - Auswertung Sachbericht (Report Evaluation)
+  - Zwischennachweis (Interim Proof)
+  - Beleganforderung (Document Request)
+  - Archivierungsverfügung (Archiving Order)
+  - Änderungsbescheid (Amendment Notice)
+  - Kurzantrag (Short Application)
+  - Antrag (Application)
+  - Förderzusage (Funding Commitment)
+  - Antragsprüfvermerk (Application Audit Note)
+  - Zuwendungsbescheid (Grant Notice)
+  - Verwendungsnachweis (Proof of Use)
+  - Mittelanforderung (Fund Request)
+  - Auszahlungsblatt (Payment Sheet)
+  - Erinnerungsschreiben (Reminder Letter)
+  - Mahnschreiben (Dunning Letter)
 - Project number extraction
 - Automatic file renaming following the pattern: `[ProjectNumber]_[DocumentType].pdf`
 - User-friendly GUI (in German)

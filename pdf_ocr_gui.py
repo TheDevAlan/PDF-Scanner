@@ -407,6 +407,26 @@ class PDFOCRGUI:
                 return f"{projekt_nr}_Archivierungsverfügung"
             elif any(term in text for term in ["Änderungsbescheid", "Aenderungsbescheid", "Änderung bescheid", "Änderung-Bescheid", "aenderungsbescheid"]):
                 return f"{projekt_nr}_Änderungsbescheid"
+            elif any(term in text for term in ["Kurzantrag", "Kurz antrag", "Kurz-Antrag", "kurzantrag"]):
+                return f"{projekt_nr}_Kurzantrag"
+            elif any(term in text for term in ["Antrag", "antrag"]):
+                return f"{projekt_nr}_Antrag"
+            elif any(term in text for term in ["Förderzusage", "Foerderzusage", "Förder zusage", "Förder-Zusage", "foerderzusage"]):
+                return f"{projekt_nr}_Förderzusage"
+            elif any(term in text for term in ["Antragsprüfvermerk", "Antragsprufvermerk", "Antragsprüf vermerk", "Antrags-Prüfvermerk", "antragsprüfvermerk"]):
+                return f"{projekt_nr}_Antragsprüfvermerk"
+            elif any(term in text for term in ["Zuwendungsbescheid", "Zuwendung bescheid", "Zuwendung-Bescheid", "zuwendungsbescheid"]):
+                return f"{projekt_nr}_Zuwendungsbescheid"
+            elif any(term in text for term in ["Verwendungsnachweis", "Verwendung nachweis", "Verwendung-Nachweis", "verwendungsnachweis"]):
+                return f"{projekt_nr}_Verwendungsnachweis"
+            elif any(term in text for term in ["Mittelanforderung", "Mittel anforderung", "Mittel-Anforderung", "mittelanforderung"]):
+                return f"{projekt_nr}_Mittelanforderung"
+            elif any(term in text for term in ["Auszahlungsblatt", "Auszahlung blatt", "Auszahlung-Blatt", "auszahlungsblatt"]):
+                return f"{projekt_nr}_Auszahlungsblatt"
+            elif any(term in text for term in ["Erinnerungsschreiben", "Erinnerung schreiben", "Erinnerung-Schreiben", "erinnerungsschreiben"]):
+                return f"{projekt_nr}_Erinnerungsschreiben"
+            elif any(term in text for term in ["Mahnschreiben", "Mahn schreiben", "Mahn-Schreiben", "mahnschreiben"]):
+                return f"{projekt_nr}_Mahnschreiben"
             else:
                 messagebox.showwarning(
                     "Unbekannter Dokumenttyp",
