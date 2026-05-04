@@ -31,20 +31,64 @@ def get_base_path():
         # When running as script
         return os.path.dirname(os.path.abspath(__file__))
 
+# Lade Lizenzinformationen
+def load_license_info():
+    """Lädt die Lizenzinformationen aus der LICENSE-Datei"""
+    base_path = get_base_path()
+    license_path = os.path.join(base_path, "LICENSE")
+    if os.path.exists(license_path):
+        try:
+            with open(license_path, 'r', encoding='utf-8') as f:
+                return f.read()
+        except Exception:
+            return "Lizenzinformationen konnten nicht geladen werden."
+    return "Lizenzinformationen nicht gefunden."
+
+LICENSE_INFO = load_license_info()
+
 # Setze den Pfad für PDFium-Bibliotheken VOR dem Import von pypdfium2
 BASE_PATH = get_base_path()
 PDFIUM_PATH = os.path.join(BASE_PATH, "resources", "pdfium")
+INTERNAL_PATH = os.path.join(BASE_PATH, "_internal")
 
-# Wenn wir als .exe ausgeführt werden und der PDFium-Ordner existiert, füge ihn zum Systempfad hinzu
-if getattr(sys, 'frozen', False) and os.path.exists(PDFIUM_PATH):
-    # Füge den Pfad zur PATH-Umgebungsvariable hinzu
-    os.environ["PATH"] = PDFIUM_PATH + os.pathsep + os.environ.get("PATH", "")
+# Wenn wir als .exe ausgeführt werden, füge mögliche PDFium-Pfade zum Systempfad hinzu
+if getattr(sys, 'frozen', False):
+    # Füge verschiedene mögliche Pfade hinzu
+    paths_to_add = []
     
-    # Setze auch die spezifische Umgebungsvariable für pypdfium2
-    os.environ["PYPDFIUM2_PDFIUM_LIBRARY"] = os.path.join(PDFIUM_PATH, "pdfium.dll")
+    # 1. _internal (wo PyInstaller Binaries normalerweise ablegt - ZUERST prüfen!)
+    # pdfium.dll wird als BINARY eingebunden und landet hier
+    if os.path.exists(INTERNAL_PATH):
+        paths_to_add.append(INTERNAL_PATH)
+        pdfium_dll_internal = os.path.join(INTERNAL_PATH, "pdfium.dll")
+        if os.path.exists(pdfium_dll_internal):
+            os.environ["PYPDFIUM2_PDFIUM_LIBRARY"] = pdfium_dll_internal
+            print(f"pdfium.dll im _internal Ordner gefunden: {pdfium_dll_internal}")
     
-    print(f"PDFium-Pfad gesetzt auf: {PDFIUM_PATH}")
-    print(f"PYPDFIUM2_PDFIUM_LIBRARY: {os.environ.get('PYPDFIUM2_PDFIUM_LIBRARY')}")
+    # 2. Hauptverzeichnis (falls pdfium.dll dort liegt)
+    if "PYPDFIUM2_PDFIUM_LIBRARY" not in os.environ:
+        pdfium_dll_base = os.path.join(BASE_PATH, "pdfium.dll")
+        if os.path.exists(pdfium_dll_base):
+            os.environ["PYPDFIUM2_PDFIUM_LIBRARY"] = pdfium_dll_base
+            paths_to_add.append(BASE_PATH)
+            print(f"pdfium.dll im Hauptverzeichnis gefunden: {pdfium_dll_base}")
+    
+    # 3. resources/pdfium (für andere DLLs und als Fallback)
+    if os.path.exists(PDFIUM_PATH):
+        paths_to_add.append(PDFIUM_PATH)
+        # Setze nur, wenn noch nicht gesetzt
+        if "PYPDFIUM2_PDFIUM_LIBRARY" not in os.environ:
+            pdfium_dll = os.path.join(PDFIUM_PATH, "pdfium.dll")
+            if os.path.exists(pdfium_dll):
+                os.environ["PYPDFIUM2_PDFIUM_LIBRARY"] = pdfium_dll
+                print(f"pdfium.dll im resources/pdfium Ordner gefunden: {pdfium_dll}")
+    
+    # Füge alle gefundenen Pfade zum PATH hinzu
+    if paths_to_add:
+        os.environ["PATH"] = os.pathsep.join(paths_to_add) + os.pathsep + os.environ.get("PATH", "")
+        print(f"PDFium-Pfade gesetzt: {', '.join(paths_to_add)}")
+        if "PYPDFIUM2_PDFIUM_LIBRARY" in os.environ:
+            print(f"PYPDFIUM2_PDFIUM_LIBRARY: {os.environ.get('PYPDFIUM2_PDFIUM_LIBRARY')}")
 
 # Erst NACH dem Setzen des Pfads importieren wir pypdfium2
 import pypdfium2 as pdfium
